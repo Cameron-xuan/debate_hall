@@ -1,0 +1,4 @@
+[submodule "connector"]
+	path = connector
+	url = https://github.com/Cameron-xuan/debate-connector.git
+
