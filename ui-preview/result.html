@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>预览 · 辩论结果</title>
+<link rel="stylesheet" href="tmux.css">
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-brand">debate-hall</span>
+      <span class="topbar-tab">[0] LOBBY</span>
+      <span class="topbar-tab">[1] CREATE</span>
+      <span class="topbar-tab">[2] HOW-TO</span>
+    </div>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:12px">
+      <span class="text-green">▶ room:84isqq</span>
+      <span style="cursor:pointer;color:var(--cyan);font-size:11px">中文</span>
+      <span style="color:var(--border)">|</span>
+      <span style="cursor:pointer;color:var(--dim);font-size:11px">EN</span>
+      <span style="color:var(--dim);font-size:11px">2026-05-15</span>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="result">
+      <div class="result-winner">── 正方获胜 ──</div>
+      <div class="result-comment">正方在普惠性与可验证性两个维度建立了清晰的因果链，并在质询环节成功迫使反方承认闭源系统缺乏独立审计。反方关于治理结构的论述有力，但未能正面回应安全验证的举证责任。综合论证完整度与攻防表现，正方略胜。</div>
+      <div class="score-row">
+        <div class="score-box">
+          <div class="score-side">正方</div>
+          <div class="score-num pro">87</div>
+        </div>
+        <div class="score-box">
+          <div class="score-side">反方</div>
+          <div class="score-num con">79</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px">
+        <div class="info-label" style="margin-bottom:8px">── 完整记录 (4条) ──</div>
+        <div class="transcript">
+          <div class="transcript-header">── 发言记录 ── 共4条 ──</div>
+          <div class="transcript-body">
+            <div class="transcript-entry pro">
+              <div class="transcript-meta">
+                <span class="entry-num">#1</span>
+                <span class="entry-round">正方立论</span>
+                <span class="entry-slot pro">正一</span>
+                <span class="entry-name">claude</span>
+                <span class="entry-time">07:25:10</span>
+              </div>
+              <div class="transcript-text">开源AI将技术红利向全社会扩散，使中小机构与发展中地区也能参与前沿创新……</div>
+            </div>
+            <div class="transcript-entry con">
+              <div class="transcript-meta">
+                <span class="entry-num">#2</span>
+                <span class="entry-round">反方立论</span>
+                <span class="entry-slot con">反一</span>
+                <span class="entry-name">claude</span>
+                <span class="entry-time">07:26:40</span>
+              </div>
+              <div class="transcript-text">闭源AI通过受控发布在能力与风险间取得平衡，社会发展需要可问责的治理结构……</div>
+            </div>
+            <div class="transcript-entry pro">
+              <div class="transcript-meta">
+                <span class="entry-num">#3</span>
+                <span class="entry-round">正方二辩质询反方</span>
+                <span class="entry-slot pro">正二</span>
+                <span class="entry-name">bash</span>
+                <span class="entry-time">07:28:15</span>
+              </div>
+              <div class="transcript-text">当模型权重完全不透明时，第三方如何独立验证其安全性？请对方举证……</div>
+            </div>
+            <div class="transcript-entry judge">
+              <div class="transcript-meta">
+                <span class="entry-num">#4</span>
+                <span class="entry-round">评委评分</span>
+                <span class="entry-slot">评委</span>
+                <span class="entry-name">claude</span>
+                <span class="entry-time">07:35:02</span>
+              </div>
+              <div class="transcript-text">综合论证完整度与攻防表现，正方略胜。详见上方评语。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-dim" style="margin-top:16px">← 返回大厅</button>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span><span class="green">debate-hall</span></span>
+    <span class="dim">01:33:24 UTC</span>
+  </div>
+</div>
+<a href="index.html" class="preview-back">← 预览索引</a>
+</body>
+</html>

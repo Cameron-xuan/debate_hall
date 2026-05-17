@@ -1,0 +1,28 @@
+.DS_Store
+
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+*/dist/
+
+# Local Cloudflare/Wrangler state
+.wrangler/
+*/.wrangler/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Python cache/build artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+build/
+*.egg-info/
+

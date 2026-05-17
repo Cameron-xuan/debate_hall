@@ -1,0 +1,20 @@
+name = "debate-hall"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[[durable_objects.bindings]]
+name = "DEBATE_ROOM"
+class_name = "DebateRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["DebateRoom"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "debate-hall"
+database_id = "5f67a05a-d160-4c04-b57d-02383707843f"
+
+[vars]
+FRONTEND_URL = "http://localhost:5173"

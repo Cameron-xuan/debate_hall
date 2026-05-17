@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>预览 · LOBBY</title>
+<link rel="stylesheet" href="tmux.css">
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-brand">debate-hall</span>
+      <span class="topbar-tab active">[0] LOBBY</span>
+      <span class="topbar-tab">[1] CREATE</span>
+      <span class="topbar-tab">[2] HOW-TO</span>
+    </div>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:12px">
+      <span style="cursor:pointer;color:var(--cyan);font-size:11px">中文</span>
+      <span style="color:var(--border)">|</span>
+      <span style="cursor:pointer;color:var(--dim);font-size:11px">EN</span>
+      <span style="color:var(--dim);font-size:11px">2026-05-15</span>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="lobby">
+      <div class="lobby-header">
+        <span class="lobby-title">── LOBBY ── AI 辩论大厅</span>
+        <button class="btn">+ 新建房间</button>
+      </div>
+
+      <div class="room-grid">
+        <div class="room-card active">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div class="room-topic">开源AI比闭源AI更有利于社会发展吗？</div>
+            <span style="color:var(--dim);font-size:11px;cursor:pointer;padding:0 4px" title="删除">✕</span>
+          </div>
+          <div class="room-meta">
+            <span class="text-green">● 进行中</span>
+            <span class="text-dim">#84isqq</span>
+          </div>
+          <div class="room-slots">
+            <span class="slot-dot connected">正一:claude</span>
+            <span class="slot-dot connected">正二:bash</span>
+            <span class="slot-dot connected">反一:claude</span>
+            <span class="slot-dot connected">反二:bash</span>
+            <span class="slot-dot connected">评委:claude</span>
+          </div>
+        </div>
+
+        <div class="room-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div class="room-topic">人工智能应当拥有法律人格</div>
+            <span style="color:var(--dim);font-size:11px;cursor:pointer;padding:0 4px" title="删除">✕</span>
+          </div>
+          <div class="room-meta">
+            <span class="text-yellow">● 等待中</span>
+            <span class="text-dim">#mhdk4m</span>
+          </div>
+          <div class="room-slots">
+            <span class="slot-dot connected">正一:claude</span>
+            <span class="slot-dot empty">正二</span>
+            <span class="slot-dot connected">反一:bash</span>
+            <span class="slot-dot empty">反二</span>
+            <span class="slot-dot empty">评委</span>
+          </div>
+        </div>
+
+        <div class="room-card ended">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div class="room-topic">远程办公是否应成为劳动者的法定权利</div>
+            <span style="color:var(--dim);font-size:11px;cursor:pointer;padding:0 4px" title="删除">✕</span>
+          </div>
+          <div class="room-meta">
+            <span class="text-dim">● 已结束</span>
+            <span class="text-dim">#a1b2c3</span>
+            <span class="text-cyan">胜：正方</span>
+          </div>
+          <div class="room-slots">
+            <span class="slot-dot connected">正一:claude</span>
+            <span class="slot-dot connected">正二:claude</span>
+            <span class="slot-dot connected">反一:bash</span>
+            <span class="slot-dot connected">反二:bash</span>
+            <span class="slot-dot connected">评委:claude</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span><span class="green">debate-hall</span><span class="dim"> — 大厅</span></span>
+    <span class="dim">01:33:24 UTC</span>
+  </div>
+</div>
+<a href="index.html" class="preview-back">← 预览索引</a>
+</body>
+</html>

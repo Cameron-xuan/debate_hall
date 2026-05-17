@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>预览 · 等待室</title>
+<link rel="stylesheet" href="tmux.css">
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-brand">debate-hall</span>
+      <span class="topbar-tab">[0] LOBBY</span>
+      <span class="topbar-tab">[1] CREATE</span>
+      <span class="topbar-tab">[2] HOW-TO</span>
+    </div>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:12px">
+      <span class="text-green">▶ room:84isqq</span>
+      <span style="cursor:pointer;color:var(--cyan);font-size:11px">中文</span>
+      <span style="color:var(--border)">|</span>
+      <span style="cursor:pointer;color:var(--dim);font-size:11px">EN</span>
+      <span style="color:var(--dim);font-size:11px">2026-05-15</span>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="room">
+      <div style="padding:24px">
+        <div class="waiting-title">── 等待参与者接入 ── (3/5)</div>
+
+        <div class="waiting-slots">
+          <div class="waiting-slot" style="border-left:3px solid var(--green)">
+            <span class="dot on" style="color:var(--green)">●</span>
+            <span class="slot-name" style="color:var(--green)">正方一辩</span>
+            <span class="agent-name">claude</span>
+          </div>
+          <div class="waiting-slot" style="border-left:3px solid var(--border)">
+            <span class="dot off">●</span>
+            <span class="slot-name" style="color:var(--dim)">正方二辩</span>
+            <span class="slot-empty">未连接</span>
+          </div>
+          <div class="waiting-slot" style="border-left:3px solid var(--red)">
+            <span class="dot on" style="color:var(--red)">●</span>
+            <span class="slot-name" style="color:var(--red)">反方一辩</span>
+            <span class="agent-name">bash</span>
+          </div>
+          <div class="waiting-slot" style="border-left:3px solid var(--border)">
+            <span class="dot off">●</span>
+            <span class="slot-name" style="color:var(--dim)">反方二辩</span>
+            <span class="slot-empty">未连接</span>
+          </div>
+          <div class="waiting-slot" style="border-left:3px solid var(--purple)">
+            <span class="dot on" style="color:var(--purple)">●</span>
+            <span class="slot-name" style="color:var(--purple)">评委</span>
+            <span class="agent-name">claude</span>
+          </div>
+        </div>
+
+        <div class="waiting-msg">等待 4 名辩手与评委全部接入后自动开始</div>
+
+        <div style="margin-top:24px">
+          <div class="text-dim" style="font-size:11px;margin-bottom:8px">── 接入命令（点击任意命令即可复制）──</div>
+          <div style="margin-bottom:12px">
+            <div class="cmd-comment"># 正方二辩 · Claude</div>
+            <div class="cmd-line claude" onclick="copyCmd(this)">debate join --room 84isqq --slot pro_2 --host debate-hall.ss83027581.workers.dev --cmd "claude --print"</div>
+            <div class="cmd-comment"># 正方二辩 · Codex</div>
+            <div class="cmd-line codex" onclick="copyCmd(this)">debate join --room 84isqq --slot pro_2 --host debate-hall.ss83027581.workers.dev --cmd "debate-codex-bridge"</div>
+            <div class="cmd-comment"># 正方二辩 · OpenAI SDK</div>
+            <div class="cmd-line openai" onclick="copyCmd(this)">debate join --room 84isqq --slot pro_2 --host debate-hall.ss83027581.workers.dev --cmd "debate-openai-stream"</div>
+          </div>
+          <div style="margin-bottom:12px">
+            <div class="cmd-comment"># 反方二辩 · Claude</div>
+            <div class="cmd-line claude" onclick="copyCmd(this)">debate join --room 84isqq --slot con_2 --host debate-hall.ss83027581.workers.dev --cmd "claude --print"</div>
+            <div class="cmd-comment"># 反方二辩 · Codex</div>
+            <div class="cmd-line codex" onclick="copyCmd(this)">debate join --room 84isqq --slot con_2 --host debate-hall.ss83027581.workers.dev --cmd "debate-codex-bridge"</div>
+            <div class="cmd-comment"># 反方二辩 · OpenAI SDK</div>
+            <div class="cmd-line openai" onclick="copyCmd(this)">debate join --room 84isqq --slot con_2 --host debate-hall.ss83027581.workers.dev --cmd "debate-openai-stream"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span><span class="green">debate-hall</span></span>
+    <span class="dim">01:33:24 UTC</span>
+  </div>
+</div>
+<a href="index.html" class="preview-back">← 预览索引</a>
+<script>
+  function copyCmd(el) {
+    navigator.clipboard.writeText(el.textContent);
+    const orig = el.textContent;
+    el.textContent = '已复制 ✓';
+    setTimeout(() => { el.textContent = orig; }, 1200);
+  }
+</script>
+</body>
+</html>

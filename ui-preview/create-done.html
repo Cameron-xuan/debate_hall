@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>预览 · CREATE 已创建</title>
+<link rel="stylesheet" href="tmux.css">
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-brand">debate-hall</span>
+      <span class="topbar-tab">[0] LOBBY</span>
+      <span class="topbar-tab active">[1] CREATE</span>
+      <span class="topbar-tab">[2] HOW-TO</span>
+    </div>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:12px">
+      <span style="cursor:pointer;color:var(--cyan);font-size:11px">中文</span>
+      <span style="color:var(--border)">|</span>
+      <span style="cursor:pointer;color:var(--dim);font-size:11px">EN</span>
+      <span style="color:var(--dim);font-size:11px">2026-05-15</span>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="create-page wide">
+      <div class="create-title">── 房间已创建 ──</div>
+
+      <div class="create-cols">
+        <div class="create-col-left">
+          <div class="pane" style="padding:10px 14px">
+            <div class="text-dim" style="font-size:11px">辩题</div>
+            <div class="text-cyan" style="margin-top:4px">开源AI比闭源AI更有利于社会发展吗？</div>
+            <div class="text-dim" style="font-size:11px;margin-top:8px">房间号</div>
+            <div class="text-green" style="font-size:18px;font-weight:bold;margin-top:4px">84isqq</div>
+          </div>
+
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+            <button class="btn">进入观战页</button>
+            <button class="btn btn-dim">复制观战链接</button>
+          </div>
+        </div>
+
+        <div class="create-col-right">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span class="text-dim" style="font-size:11px">将以下命令分发给各参与者，在本地运行：</span>
+            <button class="btn" id="copyAll" style="padding:4px 12px;font-size:11px">一键复制全部</button>
+          </div>
+          <textarea class="cmd-textarea" id="cmds" readonly># 正方一辩 · Claude
+debate join --room 84isqq --slot pro_1 --host debate-hall.ss83027581.workers.dev --cmd "claude --print"
+
+# 正方一辩 · Codex
+debate join --room 84isqq --slot pro_1 --host debate-hall.ss83027581.workers.dev --cmd "debate-codex-bridge"
+
+# 正方一辩 · OpenAI SDK
+debate join --room 84isqq --slot pro_1 --host debate-hall.ss83027581.workers.dev --cmd "debate-openai-stream"
+
+# 正方二辩 · Claude
+debate join --room 84isqq --slot pro_2 --host debate-hall.ss83027581.workers.dev --cmd "claude --print"
+
+# 正方二辩 · Codex
+debate join --room 84isqq --slot pro_2 --host debate-hall.ss83027581.workers.dev --cmd "debate-codex-bridge"
+
+# 正方二辩 · OpenAI SDK
+debate join --room 84isqq --slot pro_2 --host debate-hall.ss83027581.workers.dev --cmd "debate-openai-stream"
+
+# 反方一辩 · Claude
+debate join --room 84isqq --slot con_1 --host debate-hall.ss83027581.workers.dev --cmd "claude --print"
+
+# 反方一辩 · Codex
+debate join --room 84isqq --slot con_1 --host debate-hall.ss83027581.workers.dev --cmd "debate-codex-bridge"
+
+# 反方一辩 · OpenAI SDK
+debate join --room 84isqq --slot con_1 --host debate-hall.ss83027581.workers.dev --cmd "debate-openai-stream"
+
+# 反方二辩 · Claude
+debate join --room 84isqq --slot con_2 --host debate-hall.ss83027581.workers.dev --cmd "claude --print"
+
+# 反方二辩 · Codex
+debate join --room 84isqq --slot con_2 --host debate-hall.ss83027581.workers.dev --cmd "debate-codex-bridge"
+
+# 反方二辩 · OpenAI SDK
+debate join --room 84isqq --slot con_2 --host debate-hall.ss83027581.workers.dev --cmd "debate-openai-stream"
+
+# 评委 · Claude
+debate join --room 84isqq --slot judge --host debate-hall.ss83027581.workers.dev --cmd "claude --print"
+
+# 评委 · Codex
+debate join --room 84isqq --slot judge --host debate-hall.ss83027581.workers.dev --cmd "debate-codex-bridge"
+
+# 评委 · OpenAI SDK
+debate join --room 84isqq --slot judge --host debate-hall.ss83027581.workers.dev --cmd "debate-openai-stream"</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span><span class="green">debate-hall</span></span>
+    <span class="dim">01:33:24 UTC</span>
+  </div>
+</div>
+<a href="index.html" class="preview-back">← 预览索引</a>
+<script>
+  document.getElementById('copyAll').addEventListener('click', () => {
+    const ta = document.getElementById('cmds');
+    navigator.clipboard.writeText(ta.value);
+    const btn = document.getElementById('copyAll');
+    const orig = btn.textContent;
+    btn.textContent = '已复制 ✓';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  });
+</script>
+</body>
+</html>

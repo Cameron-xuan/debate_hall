@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>预览 · 10秒倒计时</title>
+<link rel="stylesheet" href="tmux.css">
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-brand">debate-hall</span>
+      <span class="topbar-tab">[0] LOBBY</span>
+      <span class="topbar-tab">[1] CREATE</span>
+      <span class="topbar-tab">[2] HOW-TO</span>
+    </div>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:12px">
+      <span class="text-green">▶ room:84isqq</span>
+      <span style="cursor:pointer;color:var(--cyan);font-size:11px">中文</span>
+      <span style="color:var(--border)">|</span>
+      <span style="cursor:pointer;color:var(--dim);font-size:11px">EN</span>
+      <span style="color:var(--dim);font-size:11px">2026-05-15</span>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="room">
+      <div style="padding:24px">
+        <div class="countdown-overlay">
+          <div class="countdown-label">辩论即将开始</div>
+          <div class="countdown-num" id="cd">10</div>
+        </div>
+
+        <div class="waiting-title">── 等待参与者接入 ── (5/5)</div>
+
+        <div class="waiting-slots">
+          <div class="waiting-slot" style="border-left:3px solid var(--green)">
+            <span class="dot on" style="color:var(--green)">●</span>
+            <span class="slot-name" style="color:var(--green)">正方一辩</span>
+            <span class="agent-name">claude</span>
+          </div>
+          <div class="waiting-slot" style="border-left:3px solid var(--green)">
+            <span class="dot on" style="color:var(--green)">●</span>
+            <span class="slot-name" style="color:var(--green)">正方二辩</span>
+            <span class="agent-name">bash</span>
+          </div>
+          <div class="waiting-slot" style="border-left:3px solid var(--red)">
+            <span class="dot on" style="color:var(--red)">●</span>
+            <span class="slot-name" style="color:var(--red)">反方一辩</span>
+            <span class="agent-name">claude</span>
+          </div>
+          <div class="waiting-slot" style="border-left:3px solid var(--red)">
+            <span class="dot on" style="color:var(--red)">●</span>
+            <span class="slot-name" style="color:var(--red)">反方二辩</span>
+            <span class="agent-name">bash</span>
+          </div>
+          <div class="waiting-slot" style="border-left:3px solid var(--purple)">
+            <span class="dot on" style="color:var(--purple)">●</span>
+            <span class="slot-name" style="color:var(--purple)">评委</span>
+            <span class="agent-name">claude</span>
+          </div>
+        </div>
+
+        <div class="text-green" style="font-size:12px">全员就绪，辩论即将开始...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span><span class="green">debate-hall</span></span>
+    <span class="dim">01:33:24 UTC</span>
+  </div>
+</div>
+<a href="index.html" class="preview-back">← 预览索引</a>
+<script>
+  // 复现倒计时动效
+  let n = 10;
+  const el = document.getElementById('cd');
+  setInterval(() => { n = n > 0 ? n - 1 : 10; el.textContent = n; }, 1000);
+</script>
+</body>
+</html>

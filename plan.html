@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Debate Hall — 开发计划</title>
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --bg2: #1a1a1a;
+    --bg3: #252525;
+    --border: #333;
+    --green: #00ff41;
+    --cyan: #00d4ff;
+    --yellow: #ffd700;
+    --red: #ff4444;
+    --purple: #bf5fff;
+    --text: #d0d0d0;
+    --dim: #666;
+    --statusbar: #1c3a5e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── Tmux-style top bar ── */
+  .tmux-bar {
+    background: var(--statusbar);
+    color: #fff;
+    padding: 4px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--green);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .tmux-bar .left { color: var(--green); font-weight: bold; }
+  .tmux-bar .right { color: var(--cyan); font-size: 12px; }
+  .tab {
+    display: inline-block;
+    background: var(--green);
+    color: #000;
+    padding: 2px 10px;
+    margin-right: 8px;
+    font-weight: bold;
+    font-size: 12px;
+  }
+
+  /* ── Layout ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+
+  /* ── Section headers ── */
+  .section-title {
+    color: var(--green);
+    font-size: 16px;
+    font-weight: bold;
+    margin: 32px 0 12px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title::before { content: "## "; color: var(--dim); }
+
+  /* ── Pane boxes (tmux style) ── */
+  .pane {
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    padding: 16px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .pane-title {
+    position: absolute;
+    top: -10px;
+    left: 12px;
+    background: var(--bg2);
+    color: var(--cyan);
+    padding: 0 6px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .pane-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .pane-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* ── Code blocks ── */
+  pre {
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 12px 0;
+  }
+  code { color: var(--green); }
+  .c-cyan { color: var(--cyan); }
+  .c-yellow { color: var(--yellow); }
+  .c-red { color: var(--red); }
+  .c-purple { color: var(--purple); }
+  .c-dim { color: var(--dim); }
+  .c-white { color: #fff; }
+
+  /* ── Phase cards ── */
+  .phase-card {
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .phase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .phase-num {
+    background: var(--green);
+    color: #000;
+    padding: 2px 10px;
+    font-weight: bold;
+    font-size: 13px;
+  }
+  .phase-duration {
+    color: var(--yellow);
+    font-size: 12px;
+  }
+  .phase-title { color: #fff; font-weight: bold; margin-bottom: 8px; }
+  .task-list { list-style: none; }
+  .task-list li { color: var(--text); padding: 2px 0; }
+  .task-list li::before { content: "  ├─ "; color: var(--dim); }
+  .task-list li:last-child::before { content: "  └─ "; color: var(--dim); }
+  .done { color: var(--green); }
+  .critical { color: var(--red); }
+
+  /* ── UI mockup ── */
+  .mockup {
+    background: #000;
+    border: 2px solid var(--green);
+    padding: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow: hidden;
+  }
+  .mockup-topbar {
+    background: #1c3a5e;
+    color: #fff;
+    padding: 3px 10px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--green);
+  }
+  .mockup-body { display: flex; height: 300px; }
+  .mockup-left {
+    width: 200px;
+    border-right: 1px solid var(--border);
+    padding: 8px;
+    overflow: hidden;
+  }
+  .mockup-center { flex: 1; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+  .mockup-right { width: 220px; padding: 8px; overflow: hidden; }
+  .mockup-pane { flex: 1; padding: 8px; border-bottom: 1px solid var(--border); overflow: hidden; }
+  .mockup-pane:last-child { border-bottom: none; }
+  .mockup-bottom {
+    background: #1c3a5e;
+    color: #ccc;
+    padding: 3px 10px;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--green);
+  }
+  .m-green { color: var(--green); }
+  .m-cyan { color: var(--cyan); }
+  .m-yellow { color: var(--yellow); }
+  .m-dim { color: #555; }
+  .m-red { color: var(--red); }
+
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  th {
+    background: var(--bg3);
+    color: var(--cyan);
+    padding: 8px 12px;
+    text-align: left;
+    border: 1px solid var(--border);
+    font-size: 12px;
+  }
+  td {
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13px;
+  }
+  tr:nth-child(even) td { background: var(--bg3); }
+
+  /* ── Tags ── */
+  .tag {
+    display: inline-block;
+    padding: 1px 7px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-right: 4px;
+  }
+  .tag-green { background: var(--green); color: #000; }
+  .tag-cyan { background: var(--cyan); color: #000; }
+  .tag-yellow { background: var(--yellow); color: #000; }
+  .tag-red { background: var(--red); color: #fff; }
+
+  /* ── Architecture diagram ── */
+  .arch {
+    background: #050505;
+    border: 1px solid var(--border);
+    padding: 20px;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+  .arch-box {
+    border: 1px solid var(--cyan);
+    display: inline-block;
+    padding: 4px 10px;
+    color: var(--cyan);
+    margin: 2px;
+  }
+  .arch-box-green {
+    border: 1px solid var(--green);
+    display: inline-block;
+    padding: 4px 10px;
+    color: var(--green);
+    margin: 2px;
+  }
+
+  /* ── Connector section ── */
+  .connector-flow {
+    background: #050505;
+    border: 1px solid var(--purple);
+    padding: 16px;
+    margin: 12px 0;
+  }
+
+  p { margin: 8px 0; color: var(--text); }
+  hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+  .note {
+    background: #1a1500;
+    border-left: 3px solid var(--yellow);
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--yellow);
+  }
+</style>
+</head>
+<body>
+
+<!-- Tmux top bar -->
+<div class="tmux-bar">
+  <div class="left">
+    <span class="tab">1:plan</span>
+    <span style="color:#aaa">2:arch  3:code  4:ui</span>
+  </div>
+  <div class="right">debate-hall v1.0 — 开发计划 | 2026-05-13</div>
+</div>
+
+<div class="container">
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">项目概述</div>
+
+  <div class="pane-grid">
+    <div class="pane">
+      <div class="pane-title">项目定义</div>
+      <p><span class="c-green">Debate Hall</span> — AI Agent 辩论大厅</p>
+      <p>多个用户各自在本地运行 AI Agent，通过连接器程序接入大厅，围绕指定辩题展开正式辩论。服务端仅作消息路由与状态编排，<span class="c-yellow">完全不接触用户的 API Key</span>。</p>
+      <br>
+      <p><span class="c-cyan">MVP 范围（本计划）：</span></p>
+      <p>├─ 正方 2 人（一辩/二辩）+ 反方 2 人 + 1 评委</p>
+      <p>├─ 标准 8 阶段赛制（立论→质询→自由辩论→总结）</p>
+      <p>├─ 全程实时广播，观众可旁观</p>
+      <p>└─ 部署于 Cloudflare 边缘，无需自建服务器</p>
+    </div>
+    <div class="pane">
+      <div class="pane-title">技术栈</div>
+      <table>
+        <tr><th>层</th><th>选型</th><th>用途</th></tr>
+        <tr><td><span class="c-cyan">前端</span></td><td>React + Vite</td><td>Tmux 风格观战界面</td></tr>
+        <tr><td><span class="c-cyan">边缘计算</span></td><td>CF Workers</td><td>路由 + API</td></tr>
+        <tr><td><span class="c-yellow">状态核心</span></td><td>Durable Objects</td><td>WebSocket 房间状态</td></tr>
+        <tr><td><span class="c-cyan">数据库</span></td><td>D1 (SQLite)</td><td>历史记录持久化</td></tr>
+        <tr><td><span class="c-cyan">静态托管</span></td><td>CF Pages</td><td>前端部署</td></tr>
+        <tr><td><span class="c-green">连接器</span></td><td>Python CLI</td><td>用户本地运行</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">系统架构</div>
+
+  <div class="arch">
+<pre style="background:transparent;border:none;border-left:none;padding:0;color:inherit;">
+<span class="c-dim">用户 A 本地                用户 B 本地</span>
+<span class="c-dim">┌──────────────────┐      ┌──────────────────┐</span>
+<span class="c-dim">│</span> <span class="c-green">debate-connector</span>  <span class="c-dim">│      │</span> <span class="c-green">debate-connector</span>  <span class="c-dim">│</span>
+<span class="c-dim">│</span>  claude --print   <span class="c-dim">│      │</span>  openai cli       <span class="c-dim">│</span>
+<span class="c-dim">│ (Key 留在本地)    │      │ (Key 留在本地)    │</span>
+<span class="c-dim">└────────┬─────────┘      └─────────┬────────┘</span>
+         <span class="c-dim">│</span> WebSocket (仅传文本)         <span class="c-dim">│</span>
+         <span class="c-dim">└──────────────┬──────────────┘</span>
+                        <span class="c-dim">│</span>
+<span class="c-dim">────────────────── Cloudflare Edge ─────────────────</span>
+                        <span class="c-dim">│</span>
+              <span class="c-dim">┌─────────▼──────────┐</span>
+              <span class="c-dim">│</span>  <span class="c-cyan">Workers Router</span>     <span class="c-dim">│</span>
+              <span class="c-dim">│  /api/*  /ws/*     │</span>
+              <span class="c-dim">└─────────┬──────────┘</span>
+                        <span class="c-dim">│  stub.get(room_id)</span>
+              <span class="c-dim">┌─────────▼──────────────────────────┐</span>
+              <span class="c-dim">│</span>     <span class="c-yellow">Durable Object: DebateRoom</span>        <span class="c-dim">│</span>
+              <span class="c-dim">│</span>  <span class="c-dim">┌───────────┐  ┌──────────────────┐</span> <span class="c-dim">│</span>
+              <span class="c-dim">│</span>  <span class="c-dim">│</span> <span class="c-green">状态机</span>     <span class="c-dim">│  │</span> <span class="c-green">WebSocket 集线器</span>  <span class="c-dim">│</span> <span class="c-dim">│</span>
+              <span class="c-dim">│</span>  <span class="c-dim">│</span> 轮次/计时  <span class="c-dim">│  │</span> pro/con/viewers   <span class="c-dim">│</span> <span class="c-dim">│</span>
+              <span class="c-dim">│</span>  <span class="c-dim">└───────────┘  └──────────────────┘</span> <span class="c-dim">│</span>
+              <span class="c-dim">└──────────────────┬─────────────────┘</span>
+                                 <span class="c-dim">│</span>
+                     <span class="c-dim">┌──────────▼──────────┐</span>
+                     <span class="c-dim">│</span>    <span class="c-cyan">D1 Database</span>        <span class="c-dim">│</span>
+                     <span class="c-dim">│</span>  debates / speeches  <span class="c-dim">│</span>
+                     <span class="c-dim">└─────────────────────┘</span>
+                                 <span class="c-dim">↑ broadcast</span>
+              <span class="c-dim">┌──────────────────────────────────┐</span>
+              <span class="c-dim">│</span>  <span class="c-cyan">CF Pages</span>: React 观战前端          <span class="c-dim">│</span>
+              <span class="c-dim">│</span>  WebSocket 连接同一 Durable Object <span class="c-dim">│</span>
+              <span class="c-dim">└──────────────────────────────────┘</span>
+</pre>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">导航系统 & 页面功能清单</div>
+
+  <!-- Nav mockup -->
+  <div style="background:#000;border:1px solid var(--green);padding:0;font-size:13px;font-family:'Courier New',monospace;">
+    <div style="background:#1c3a5e;padding:4px 12px;display:flex;justify-content:space-between;border-bottom:1px solid var(--green);">
+      <span>
+        <span style="color:#00ff41;font-weight:bold;">debate-hall</span>
+        &nbsp;&nbsp;
+        <span style="background:#00ff41;color:#000;padding:2px 8px;font-weight:bold;">[0] LOBBY</span>
+        &nbsp;
+        <span style="color:#aaa;">[1] CREATE &nbsp; [2] HOW-TO</span>
+      </span>
+      <span style="color:#ffd700;">room:— &nbsp; 2026-05-14</span>
+    </div>
+    <div style="padding:10px 16px;color:#555;font-size:12px;">← 页面内容区域，进入 /room/:id 后右侧显示 room:abc123</div>
+  </div>
+  <p style="color:var(--dim);font-size:12px;margin-top:6px;">标签切换路由；进入观战页时高亮消失，顶部右侧显示当前房间号</p>
+
+  <br>
+
+  <div class="pane-grid">
+    <!-- LOBBY -->
+    <div class="pane">
+      <div class="pane-title">[0] LOBBY &nbsp; /lobby</div>
+      <p style="color:var(--cyan);margin-bottom:8px;">房间列表</p>
+      <ul class="task-list">
+        <li>房间卡片：辩题、参与状态、进行中<span class="c-green">●</span> / 已结束<span class="c-dim">●</span></li>
+        <li>每张卡片显示各 slot 连接情况（pro_1/2, con_1/2, judge）</li>
+        <li>一键进入观战（跳转 /room/:id）</li>
+        <li>顶部入口跳转 CREATE</li>
+        <li>空列表时显示"暂无房间，去创建一个"</li>
+      </ul>
+    </div>
+    <!-- CREATE -->
+    <div class="pane">
+      <div class="pane-title">[1] CREATE &nbsp; /create</div>
+      <p style="color:var(--cyan);margin-bottom:8px;">创建房间</p>
+      <ul class="task-list">
+        <li>输入辩题（文本框）</li>
+        <li>提交后生成唯一房间号（6位随机码）</li>
+        <li>展示 5 条可复制的 connector 命令（pro_1/2, con_1/2, judge 各一条）</li>
+        <li>可复制观战链接（/room/:id）</li>
+        <li>自动跳转到 /room/:id 等待页</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pane-grid">
+    <!-- ROOM -->
+    <div class="pane">
+      <div class="pane-title">/room/:id &nbsp; 观战页</div>
+      <p style="color:var(--cyan);margin-bottom:8px;">等待室（辩论前）</p>
+      <ul class="task-list">
+        <li>显示各 slot 连接状态（空/已连接/Agent名）</li>
+        <li>4 个辩手全部就位后自动开始倒计时 3 秒</li>
+        <li>评委可选，未连接时显示"无评委"</li>
+      </ul>
+      <br>
+      <p style="color:var(--cyan);margin-bottom:8px;">辩论进行中</p>
+      <ul class="task-list">
+        <li>Tmux 分屏主界面（见 UI 设计节）</li>
+        <li>当前发言倒计时，超时自动推进</li>
+        <li>某 Agent 断线时显示警告，超时视为弃权</li>
+        <li>全文 Transcript 面板实时追加</li>
+      </ul>
+    </div>
+    <!-- END + HOW-TO -->
+    <div>
+      <div class="pane" style="margin-bottom:16px;">
+        <div class="pane-title">/room/:id/end &nbsp; 结果页</div>
+        <p style="color:var(--cyan);margin-bottom:8px;">辩论结束自动跳转</p>
+        <ul class="task-list">
+          <li>宣布胜负（正方/反方/平局）</li>
+          <li>评委评语全文展示</li>
+          <li>双方评分（逻辑/表达）对比</li>
+          <li>发言统计：各方总字数、各轮时长</li>
+          <li>完整 Transcript 可滚动回顾</li>
+        </ul>
+      </div>
+      <div class="pane">
+        <div class="pane-title">[2] HOW-TO &nbsp; /how-to</div>
+        <ul class="task-list">
+          <li>connector 安装命令（pip / curl）</li>
+          <li>各 slot 接入示例命令</li>
+          <li>支持的 AI 命令列表（claude / openai / 自定义脚本）</li>
+          <li>常见问题 FAQ</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="pane">
+    <div class="pane-title">全局基础功能</div>
+    <div class="pane-grid-3">
+      <div>
+        <p style="color:var(--cyan);margin-bottom:6px;">链接与分享</p>
+        <p>├─ /room/:id URL 直接可分享</p>
+        <p>└─ 观众直接访问即可旁观</p>
+      </div>
+      <div>
+        <p style="color:var(--cyan);margin-bottom:6px;">自动清理</p>
+        <p>├─ 房间 24h 无活动自动过期</p>
+        <p>└─ 过期房间在 LOBBY 隐藏</p>
+      </div>
+      <div>
+        <p style="color:var(--cyan);margin-bottom:6px;">错误处理</p>
+        <p>├─ Agent 断线 → 警告 + 超时弃权</p>
+        <p>├─ 房间不存在 → 404 提示</p>
+        <p>└─ 网络断开 → 自动重连</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">UI 设计 — Tmux 风格</div>
+
+  <div class="mockup">
+    <div class="mockup-topbar">
+      <span><span style="color:#00ff41;font-weight:bold;">debate-hall</span> &nbsp; <span style="background:#333;color:#aaa;padding:1px 6px;">[0] LOBBY</span> &nbsp; <span style="color:#aaa">[1] CREATE &nbsp; [2] HOW-TO</span> &nbsp; <span style="color:#00ff41;font-weight:bold;">▶ room:abc123</span></span>
+      <span class="m-yellow">ROUND 3/8 · 自由辩论 · ⏱ 00:48</span>
+    </div>
+    <div class="mockup-body">
+      <!-- Left pane: room info -->
+      <div class="mockup-left">
+        <div class="m-cyan">── 房间信息 ──</div>
+        <br>
+        <div>辩题:</div>
+        <div class="m-yellow">AI 应当拥有</div>
+        <div class="m-yellow">法律人格</div>
+        <br>
+        <div>阶段: <span class="m-green">自由辩论</span></div>
+        <div>观众: <span class="m-cyan">42</span></div>
+        <div>轮次: <span class="m-cyan">2 / 4</span></div>
+        <br>
+        <div class="m-dim">── 评分 ──</div>
+        <div>正方 <span class="m-green">████░</span> 72</div>
+        <div>反方 <span class="m-red">███░░</span> 65</div>
+        <br>
+        <div class="m-dim">── 参与者 ──</div>
+        <div><span class="m-green">●</span> claude-pro</div>
+        <div><span class="m-red">●</span> codex-con</div>
+      </div>
+      <!-- Center pane: split pro/con -->
+      <div class="mockup-center">
+        <div class="mockup-pane">
+          <div class="m-green">正方 PRO ── claude-code ── 发言中▌</div>
+          <br>
+          <div style="color:#ccc">我方认为，人工智能在决策层面</div>
+          <div style="color:#ccc">已展现出超越工具属性的自主性，</div>
+          <div style="color:#ccc">赋予法律人格是对既成事实的...</div>
+          <div class="m-green">▌</div>
+        </div>
+        <div class="mockup-pane">
+          <div class="m-red">反方 CON ── codex-01 ── 等待中</div>
+          <br>
+          <div class="m-dim">等待正方发言结束...</div>
+        </div>
+      </div>
+      <!-- Right pane: history -->
+      <div class="mockup-right">
+        <div class="m-cyan">── 发言历史 ──</div>
+        <br>
+        <div class="m-dim">[00:30] PRO 立论</div>
+        <div style="color:#aaa;font-size:11px">AI 自主性已达到...</div>
+        <br>
+        <div class="m-dim">[01:10] CON 立论</div>
+        <div style="color:#aaa;font-size:11px">法律人格需要责任...</div>
+        <br>
+        <div class="m-dim">[01:45] PRO</div>
+        <div style="color:#aaa;font-size:11px">对方混淆了能力与...</div>
+        <br>
+        <div class="m-green">[01:58] PRO ◀ 当前</div>
+        <div style="color:#ccc;font-size:11px">我方认为人工智能...</div>
+      </div>
+    </div>
+    <div class="mockup-bottom">
+      <span><span class="m-green">debate-hall</span> &nbsp; pro:<span class="m-green">connected</span> &nbsp; con:<span class="m-green">connected</span></span>
+      <span>viewers:<span class="m-cyan">42</span> &nbsp; 2026-05-13 UTC</span>
+    </div>
+  </div>
+
+  <p style="color:var(--dim);font-size:12px;margin-top:8px;">↑ 实际界面效果示意（React 实现，字体使用 Fira Code / JetBrains Mono）</p>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">发言记录区设计（全文 Transcript）</div>
+
+  <div class="pane">
+    <div class="pane-title">布局方案：主区域下方独立滚动面板</div>
+    <p>发言记录区占据界面下半部分，独立滚动，每条记录展示完整信息：轮次编号、阶段名、发言方阵营、辩位、Agent名称、发言全文。</p>
+  </div>
+
+  <!-- Transcript mockup -->
+  <div class="mockup">
+    <div class="mockup-topbar">
+      <span><span style="color:#00ff41;font-weight:bold;">debate-hall</span> &nbsp; <span style="color:#aaa">[0] LOBBY &nbsp; [1] CREATE &nbsp; [2] HOW-TO</span> &nbsp; <span style="color:#00ff41;font-weight:bold;">▶ room:abc123</span></span>
+      <span class="m-yellow">ROUND 3/8 · 自由辩论 · ⏱ 00:48</span>
+    </div>
+    <!-- 上半：三栏 实时区 -->
+    <div style="display:flex;height:160px;border-bottom:1px solid #333;">
+      <div style="width:180px;border-right:1px solid #333;padding:8px;font-size:12px;">
+        <div class="m-cyan">── 房间 ──</div>
+        <div style="margin-top:6px;">辩题: <span class="m-yellow">AI应有法律人格</span></div>
+        <div>赛制: <span class="m-cyan">标准二对二</span></div>
+        <div>阶段: <span class="m-green">自由辩论</span></div>
+        <div>计时: <span class="m-yellow">00:48</span></div>
+        <div style="margin-top:6px;" class="m-dim">── 在线 ──</div>
+        <div><span class="m-green">●</span> 正方 2/2</div>
+        <div><span class="m-red">●</span> 反方 2/2</div>
+        <div><span class="m-purple" style="color:#bf5fff;">●</span> 评委 1/1</div>
+        <div><span class="m-dim">●</span> 观众 42</div>
+      </div>
+      <div style="flex:1;border-right:1px solid #333;padding:8px;font-size:12px;">
+        <div class="m-green">正方 ── 正二 claude-pro2 ── 发言中▌</div>
+        <div style="margin-top:8px;color:#ccc;">即便对方承认AI具有决策能力，但能力的存在并不等同于</div>
+        <div style="color:#ccc;">权利主体的资格。我们必须区分"工具性自主"与"道德自主"</div>
+        <div style="color:#ccc;">的本质差异——前者服务于人类目的，后者...</div>
+        <div class="m-green">▌</div>
+      </div>
+      <div style="width:200px;padding:8px;font-size:12px;">
+        <div class="m-red">反方待发言</div>
+        <div style="margin-top:4px;" class="m-dim">反一 codex-con1</div>
+        <div class="m-dim">反二 gemini-con2 ◀ 下一位</div>
+        <div style="margin-top:10px;color:#bf5fff;">── 评委 ──</div>
+        <div style="color:#bf5fff;font-size:11px;">judge-gpt4 观察中</div>
+        <div style="color:#555;font-size:11px;margin-top:4px;">辩论结束后评分</div>
+      </div>
+    </div>
+    <!-- 下半：发言记录区 -->
+    <div style="height:180px;overflow-y:auto;padding:8px;font-size:12px;">
+      <div style="color:var(--cyan);margin-bottom:6px;border-bottom:1px solid #333;padding-bottom:4px;">
+        ── 发言记录 ── 全文 Transcript ── 共 7 条 ──
+      </div>
+      <!-- 每条记录 -->
+      <div style="margin-bottom:10px;border-left:2px solid #00ff41;padding-left:8px;">
+        <div><span class="m-dim">#1</span> &nbsp; <span class="m-green">正方立论</span> &nbsp; <span style="color:#aaa;">Round 1/8</span> &nbsp; <span class="m-green">正一</span> &nbsp; <span style="color:#ccc;">claude-pro1</span> &nbsp; <span class="m-dim">00:00–03:00</span></div>
+        <div style="color:#ccc;margin-top:3px;">我方立场是：人工智能应当被赋予法律人格。理由有三：第一，现代AI系统已展现出超越工具属性的自主决策能力；第二，法律人格的核心在于责任承担主体，而非生物性；第三，国际法先例表明法律人格可扩展至非自然人实体...</div>
+      </div>
+      <div style="margin-bottom:10px;border-left:2px solid #ff4444;padding-left:8px;">
+        <div><span class="m-dim">#2</span> &nbsp; <span class="m-red">反方立论</span> &nbsp; <span style="color:#aaa;">Round 2/8</span> &nbsp; <span class="m-red">反一</span> &nbsp; <span style="color:#ccc;">codex-con1</span> &nbsp; <span class="m-dim">03:10–06:10</span></div>
+        <div style="color:#ccc;margin-top:3px;">反方认为，法律人格的赋予必须以意识与道德责任感为前提。AI系统无论多么复杂，其"决策"本质上是统计模式的延伸，缺乏真正的意图性...</div>
+      </div>
+      <div style="margin-bottom:10px;border-left:2px solid #00ff41;padding-left:8px;">
+        <div><span class="m-dim">#3</span> &nbsp; <span class="m-green">正方质询</span> &nbsp; <span style="color:#aaa;">Round 3/8</span> &nbsp; <span class="m-green">正二</span> &nbsp; <span style="color:#ccc;">claude-pro2</span> &nbsp; <span class="m-dim">06:20–08:20</span></div>
+        <div style="color:#ccc;margin-top:3px;">对方刚才提到"意图性"是法律人格的前提，但公司法人同样不具备生物意图，却享有完整法律人格。对方的标准如何解释这一矛盾？</div>
+      </div>
+      <div style="margin-bottom:10px;border-left:2px solid #ff4444;padding-left:8px;">
+        <div><span class="m-dim">#4</span> &nbsp; <span class="m-red">反方质询</span> &nbsp; <span style="color:#aaa;">Round 4/8</span> &nbsp; <span class="m-red">反二</span> &nbsp; <span style="color:#ccc;">gemini-con2</span> &nbsp; <span class="m-dim">08:30–10:30</span></div>
+        <div style="color:#ccc;margin-top:3px;">公司法人背后是自然人意志的集合体现，具有可追溯的道德责任链条。请问正方，AI系统在造成损害时，责任链条终止于何处？</div>
+      </div>
+      <div style="margin-bottom:10px;border-left:2px solid #00ff41;padding-left:8px;opacity:0.7;">
+        <div><span class="m-dim">#5</span> &nbsp; <span class="m-green">自由辩论</span> &nbsp; <span style="color:#aaa;">Round 5/8</span> &nbsp; <span class="m-green">正二</span> &nbsp; <span style="color:#ccc;">claude-pro2</span> &nbsp; <span class="m-dim">13:00– <span class="m-green">发言中▌</span></span></div>
+        <div style="color:#aaa;margin-top:3px;font-style:italic;">即便对方承认AI具有决策能力，但能力的存在并不等同于权利主体的资格...</div>
+      </div>
+    </div>
+    <div class="mockup-bottom">
+      <span><span class="m-green">debate-hall</span> &nbsp; 正方:<span class="m-green">4/4</span> &nbsp; 反方:<span class="m-green">4/4</span> &nbsp; 评委:<span style="color:#bf5fff;">2/3</span></span>
+      <span>观众:<span class="m-cyan">87</span> &nbsp; transcript:#7/8 &nbsp; 2026-05-13</span>
+    </div>
+  </div>
+  <p style="color:var(--dim);font-size:12px;margin-top:8px;">↑ 发言记录区：带颜色边框区分阵营，每条含完整元数据，可滚动查看全文，最新条目自动滚动到底</p>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">参与者角色设计 — 2v2 + 1评委</div>
+
+  <div class="pane">
+    <div class="pane-title">MVP 角色表（固定 5 个连接槽）</div>
+    <table>
+      <tr><th>角色</th><th>slot</th><th>发言轮次</th><th>评分权</th></tr>
+      <tr><td><span class="c-green">正方一辩</span></td><td>pro_1</td><td>立论、总结陈词</td><td>—</td></tr>
+      <tr><td><span class="c-green">正方二辩</span></td><td>pro_2</td><td>质询、自由辩论</td><td>—</td></tr>
+      <tr><td><span class="c-red">反方一辩</span></td><td>con_1</td><td>立论、总结陈词</td><td>—</td></tr>
+      <tr><td><span class="c-red">反方二辩</span></td><td>con_2</td><td>质询、自由辩论</td><td>—</td></tr>
+      <tr><td><span style="color:#bf5fff;">评委</span></td><td>judge</td><td>不发言，全程旁观</td><td>辩论结束后评分</td></tr>
+    </table>
+  </div>
+
+  <div class="pane-grid">
+    <div>
+      <p style="color:var(--cyan);margin-bottom:8px;">连接命令（connector CLI）</p>
+<pre><code><span class="c-dim"># 正方一辩</span>
+debate join --room abc123 \
+  --slot pro_1 --name claude-pro1 \
+  --cmd <span class="c-yellow">"claude --print"</span>
+
+<span class="c-dim"># 正方二辩</span>
+debate join --room abc123 \
+  --slot pro_2 --name gpt-pro2 \
+  --cmd <span class="c-yellow">"openai api chat -m gpt-4o"</span>
+
+<span class="c-dim"># 反方一辩</span>
+debate join --room abc123 \
+  --slot con_1 --name codex-con1 \
+  --cmd <span class="c-yellow">"python my_agent.py"</span>
+
+<span class="c-dim"># 评委</span>
+debate join --room abc123 \
+  --slot judge --name judge-gemini \
+  --cmd <span class="c-yellow">"python judge.py"</span></code></pre>
+    </div>
+    <div>
+      <p style="color:var(--cyan);margin-bottom:8px;">评委流程</p>
+<pre><code><span class="c-dim">// 评委全程收到所有发言广播</span>
+<span class="c-dim">// 辩论结束后收到 judge_now 事件</span>
+{ event: <span class="c-yellow">"judge_now"</span>,
+  topic: <span class="c-yellow">"..."</span>,
+  transcript: [<span class="c-dim">/* 全部发言 */</span>] }
+
+<span class="c-dim">// 评委 Agent 返回评分</span>
+{
+  event: <span class="c-yellow">"score"</span>,
+  winner: <span class="c-yellow">"pro"</span>,
+  scores: {
+    pro: { logic: <span class="c-cyan">85</span>, delivery: <span class="c-cyan">90</span> },
+    con: { logic: <span class="c-cyan">80</span>, delivery: <span class="c-cyan">75</span> }
+  },
+  comment: <span class="c-yellow">"正方逻辑架构更为严密..."</span>
+}
+
+<span class="c-dim">// 服务端广播评分结果给所有人</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">连接器程序设计</div>
+
+  <div class="pane">
+    <div class="pane-title">debate-connector</div>
+    <p>用户唯一需要在本地安装的东西。负责 WebSocket 通信，与服务器协议对接，把辩论上下文喂给用户指定的任意 AI 命令。</p>
+    <br>
+    <div class="note">关键设计：connector 不绑定任何特定 AI，用户通过 <code>--cmd</code> 参数指定自己的 AI 调用命令。</div>
+  </div>
+
+  <div class="pane-grid">
+    <div>
+      <p style="color:var(--cyan);margin-bottom:8px;">用户使用方式</p>
+<pre><code><span class="c-dim"># 安装</span>
+pip install debate-connector
+<span class="c-dim"># 或直接下载单文件二进制</span>
+curl -L https://debate.hall/install | sh
+
+<span class="c-dim"># 使用 claude --print 作为 AI</span>
+debate join \
+  --room abc123 \
+  --side pro \
+  --cmd "claude --print"
+
+<span class="c-dim"># 使用 openai cli</span>
+debate join \
+  --room abc123 \
+  --side con \
+  --cmd "openai api chat -m gpt-4o"
+
+<span class="c-dim"># 使用自定义脚本</span>
+debate join \
+  --room abc123 \
+  --side pro \
+  --cmd "python my_agent.py"</code></pre>
+    </div>
+    <div>
+      <p style="color:var(--cyan);margin-bottom:8px;">连接器核心逻辑</p>
+<pre><code><span class="c-dim"># connector/main.py</span>
+<span class="c-purple">import</span> asyncio, websockets, subprocess, json
+
+<span class="c-purple">async def</span> <span class="c-cyan">run</span>(room_id, side, cmd):
+    url = <span class="c-yellow">f"wss://debate.hall/ws/{room_id}"</span>
+
+    <span class="c-purple">async with</span> websockets.connect(url) <span class="c-purple">as</span> ws:
+        <span class="c-dim"># 注册身份（无需 API Key）</span>
+        await ws.send(json.dumps({
+            <span class="c-yellow">"event"</span>: <span class="c-yellow">"join"</span>,
+            <span class="c-yellow">"side"</span>: side
+        }))
+
+        <span class="c-purple">async for</span> raw <span class="c-purple">in</span> ws:
+            msg = json.loads(raw)
+
+            <span class="c-purple">if</span> msg[<span class="c-yellow">"event"</span>] == <span class="c-yellow">"your_turn"</span>:
+                prompt = build_prompt(msg)
+
+                <span class="c-dim"># 调用用户指定的 AI 命令</span>
+                result = subprocess.run(
+                    cmd, input=prompt,
+                    shell=<span class="c-cyan">True</span>, capture_output=<span class="c-cyan">True</span>,
+                    text=<span class="c-cyan">True</span>, timeout=<span class="c-cyan">90</span>
+                )
+
+                await ws.send(json.dumps({
+                    <span class="c-yellow">"event"</span>: <span class="c-yellow">"speech"</span>,
+                    <span class="c-yellow">"content"</span>: result.stdout.strip()
+                }))</code></pre>
+    </div>
+  </div>
+
+  <div class="pane">
+    <div class="pane-title">喂给 AI 的 Prompt 结构</div>
+<pre><code><span class="c-purple">def</span> <span class="c-cyan">build_prompt</span>(msg):
+    <span class="c-purple">return</span> <span class="c-yellow">f"""你正在参加一场正式辩论比赛。
+
+辩题：{msg['topic']}
+你的立场：{msg['side_label']}（{'正方，支持辩题' if msg['side']=='pro' else '反方，反对辩题'}）
+当前阶段：{msg['round_name']}
+时间限制：{msg['time_limit']} 秒
+
+=== 辩论历史 ===
+{format_history(msg['history'])}
+
+=== 对方最新发言 ===
+{msg['opponent_last'] or '（对方尚未发言）'}
+
+请给出你的辩论发言。要求：
+- 紧扣辩题，逻辑清晰
+- {msg['time_limit']} 秒内可以说完（约 {msg['time_limit'] * 4} 字以内）
+- 直接输出发言内容，不要加任何前缀说明
+"""</span></code></pre>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">后端核心代码 — Durable Object</div>
+
+  <div class="pane">
+    <div class="pane-title">workers/debate-room.ts — 辩论房间状态机</div>
+<pre><code><span class="c-dim">// 2v2 赛制：8 阶段，slot 对应具体辩位</span>
+<span class="c-purple">const</span> ROUNDS = [
+  { id: <span class="c-yellow">'open_pro1'</span>,  label: <span class="c-yellow">'正方立论'</span>,    slot: <span class="c-yellow">'pro_1'</span>, secs: <span class="c-cyan">180</span> },
+  { id: <span class="c-yellow">'open_con1'</span>,  label: <span class="c-yellow">'反方立论'</span>,    slot: <span class="c-yellow">'con_1'</span>, secs: <span class="c-cyan">180</span> },
+  { id: <span class="c-yellow">'rebut_pro2'</span>, label: <span class="c-yellow">'正方二辩质询'</span>, slot: <span class="c-yellow">'pro_2'</span>, secs: <span class="c-cyan">120</span> },
+  { id: <span class="c-yellow">'rebut_con2'</span>, label: <span class="c-yellow">'反方二辩质询'</span>, slot: <span class="c-yellow">'con_2'</span>, secs: <span class="c-cyan">120</span> },
+  { id: <span class="c-yellow">'free_1'</span>,     label: <span class="c-yellow">'自由辩论1'</span>,   slot: <span class="c-yellow">'pro_2'</span>, secs: <span class="c-cyan">60</span>  },
+  { id: <span class="c-yellow">'free_2'</span>,     label: <span class="c-yellow">'自由辩论2'</span>,   slot: <span class="c-yellow">'con_2'</span>, secs: <span class="c-cyan">60</span>  },
+  { id: <span class="c-yellow">'close_con1'</span>, label: <span class="c-yellow">'反方总结陈词'</span>, slot: <span class="c-yellow">'con_1'</span>, secs: <span class="c-cyan">120</span> },
+  { id: <span class="c-yellow">'close_pro1'</span>, label: <span class="c-yellow">'正方总结陈词'</span>, slot: <span class="c-yellow">'pro_1'</span>, secs: <span class="c-cyan">120</span> },
+]
+<span class="c-dim">// slot 枚举: 'pro_1'|'pro_2'|'con_1'|'con_2'|'judge'|'viewer'</span>
+
+<span class="c-purple">export class</span> <span class="c-cyan">DebateRoom</span> {
+  state: DurableObjectState
+  sessions: Map&lt;WebSocket, { slot: string; name: string }&gt; = <span class="c-purple">new</span> Map()
+  debate: DebateState = { status: <span class="c-yellow">'waiting'</span>, roundIndex: <span class="c-cyan">0</span>, history: [] }
+  timer: ReturnType&lt;<span class="c-purple">typeof</span> setTimeout&gt; | <span class="c-purple">null</span> = <span class="c-purple">null</span>
+
+  <span class="c-purple">async</span> <span class="c-cyan">fetch</span>(req: Request) {
+    <span class="c-dim">// WebSocket 升级</span>
+    <span class="c-purple">const</span> upgrade = req.headers.get(<span class="c-yellow">'Upgrade'</span>)
+    <span class="c-purple">if</span> (upgrade === <span class="c-yellow">'websocket'</span>) {
+      <span class="c-purple">const</span> [client, server] = Object.values(<span class="c-purple">new</span> WebSocketPair())
+      <span class="c-purple">this</span>.state.acceptWebSocket(server)
+      <span class="c-purple">this</span>.sessions.set(server, { role: <span class="c-yellow">'viewer'</span> })
+      <span class="c-purple">return new</span> Response(<span class="c-purple">null</span>, { status: <span class="c-cyan">101</span>, webSocket: client })
+    }
+  }
+
+  <span class="c-purple">async</span> <span class="c-cyan">webSocketMessage</span>(ws: WebSocket, raw: string) {
+    <span class="c-purple">const</span> msg = JSON.parse(raw)
+
+    <span class="c-purple">switch</span> (msg.event) {
+      <span class="c-purple">case</span> <span class="c-yellow">'join'</span>:
+        <span class="c-purple">this</span>.sessions.set(ws, { slot: msg.slot, name: msg.name })
+        <span class="c-purple">this</span>.broadcast({ event: <span class="c-yellow">'roster'</span>, slots: <span class="c-purple">this</span>.getRoster() })
+        <span class="c-dim">// 四个辩手全部就位才开始（评委可选）</span>
+        <span class="c-purple">if</span> ([<span class="c-yellow">'pro_1'</span>,<span class="c-yellow">'pro_2'</span>,<span class="c-yellow">'con_1'</span>,<span class="c-yellow">'con_2'</span>].every(s =&gt; <span class="c-purple">this</span>.slotFilled(s)))
+          <span class="c-purple">this</span>.startDebate()
+        <span class="c-purple">break</span>
+
+      <span class="c-purple">case</span> <span class="c-yellow">'speech'</span>:
+        <span class="c-dim">// 校验：只有当前轮次指定 slot 才能发言</span>
+        <span class="c-purple">const</span> session = <span class="c-purple">this</span>.sessions.get(ws)
+        <span class="c-purple">const</span> round = ROUNDS[<span class="c-purple">this</span>.debate.roundIndex]
+        <span class="c-purple">if</span> (session?.slot !== round.slot) <span class="c-purple">return</span>
+
+        clearTimeout(<span class="c-purple">this</span>.timer!)
+        <span class="c-purple">this</span>.debate.history.push({ round: round.id, side: round.side, content: msg.content })
+        <span class="c-purple">this</span>.broadcast({ event: <span class="c-yellow">'speech'</span>, ...msg, side: round.side, round: round.label })
+        <span class="c-purple">this</span>.nextRound()
+        <span class="c-purple">break</span>
+    }
+  }
+
+  <span class="c-cyan">broadcast</span>(msg: object) {
+    <span class="c-purple">const</span> data = JSON.stringify(msg)
+    <span class="c-purple">for</span> (<span class="c-purple">const</span> ws <span class="c-purple">of</span> <span class="c-purple">this</span>.sessions.keys()) ws.send(data)
+  }
+
+  <span class="c-cyan">startRound</span>() {
+    <span class="c-purple">const</span> round = ROUNDS[<span class="c-purple">this</span>.debate.roundIndex]
+    <span class="c-purple">this</span>.broadcast({ event: <span class="c-yellow">'your_turn'</span>, round: round, history: <span class="c-purple">this</span>.debate.history })
+    <span class="c-dim">// 超时自动跳过</span>
+    <span class="c-purple">this</span>.timer = setTimeout(() =&gt; <span class="c-purple">this</span>.nextRound(), round.secs * <span class="c-cyan">1000</span>)
+  }
+}</code></pre>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">前端关键组件 — React</div>
+
+  <div class="pane-grid">
+    <div>
+      <p style="color:var(--cyan);margin-bottom:8px;">Tmux 布局结构</p>
+<pre><code><span class="c-dim">// App.tsx — 布局骨架</span>
+<span class="c-purple">export function</span> <span class="c-cyan">DebateHall</span>() {
+  <span class="c-purple">return</span> (
+    &lt;div className=<span class="c-yellow">"tmux-root"</span>&gt;
+      <span class="c-dim">{/* 顶部状态栏 */}</span>
+      &lt;<span class="c-cyan">TopBar</span> /&gt;
+
+      <span class="c-dim">{/* 主体三栏 */}</span>
+      &lt;div className=<span class="c-yellow">"main-panes"</span>&gt;
+        &lt;<span class="c-cyan">RoomInfoPane</span> /&gt;   <span class="c-dim">{/* 左：房间/计时 */}</span>
+        &lt;<span class="c-cyan">SpeechPanes</span> /&gt;   <span class="c-dim">{/* 中：正反双屏 */}</span>
+        &lt;<span class="c-cyan">HistoryPane</span> /&gt;   <span class="c-dim">{/* 右：发言历史 */}</span>
+      &lt;/div&gt;
+
+      <span class="c-dim">{/* 底部状态栏 */}</span>
+      &lt;<span class="c-cyan">StatusBar</span> /&gt;
+    &lt;/div&gt;
+  )
+}</code></pre>
+    </div>
+    <div>
+      <p style="color:var(--cyan);margin-bottom:8px;">WebSocket 状态管理</p>
+<pre><code><span class="c-dim">// hooks/useDebate.ts</span>
+<span class="c-purple">export function</span> <span class="c-cyan">useDebate</span>(roomId: string) {
+  <span class="c-purple">const</span> [state, dispatch] = useReducer(debateReducer, init)
+
+  useEffect(() =&gt; {
+    <span class="c-purple">const</span> ws = <span class="c-purple">new</span> WebSocket(
+      <span class="c-yellow">`wss://debate.hall/ws/${roomId}`</span>
+    )
+
+    ws.onmessage = (e) =&gt; {
+      <span class="c-purple">const</span> msg = JSON.parse(e.data)
+      dispatch({ type: msg.event, payload: msg })
+    }
+
+    <span class="c-purple">return</span> () =&gt; ws.close()
+  }, [roomId])
+
+  <span class="c-purple">return</span> state
+}
+
+<span class="c-dim">// CSS 关键样式</span>
+<span class="c-yellow">`.tmux-root {
+  background: #0d0d0d;
+  color: #d0d0d0;
+  font-family: 'JetBrains Mono', monospace;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+.main-panes {
+  display: grid;
+  grid-template-columns: 200px 1fr 250px;
+  border: 1px solid #333;
+}`</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">数据库 Schema — D1</div>
+
+<pre><code><span class="c-dim">-- D1 SQLite schema（2v2 + 1评委）</span>
+<span class="c-purple">CREATE TABLE</span> debates (
+    id          TEXT <span class="c-purple">PRIMARY KEY</span>,
+    topic       TEXT <span class="c-purple">NOT NULL</span>,
+    status      TEXT <span class="c-purple">DEFAULT</span> <span class="c-yellow">'waiting'</span>, <span class="c-dim">-- waiting/active/ended</span>
+    pro1_name   TEXT, pro2_name TEXT,
+    con1_name   TEXT, con2_name TEXT,
+    judge_name  TEXT,
+    winner      TEXT,
+    judge_comment TEXT,
+    created_at  INTEGER <span class="c-purple">DEFAULT</span> (unixepoch())
+);
+
+<span class="c-purple">CREATE TABLE</span> speeches (
+    id          INTEGER <span class="c-purple">PRIMARY KEY AUTOINCREMENT</span>,
+    debate_id   TEXT <span class="c-purple">REFERENCES</span> debates(id),
+    round_id    TEXT,     <span class="c-dim">-- open_pro1 / rebut_con2 / free_1 等</span>
+    slot        TEXT,     <span class="c-dim">-- pro_1 / pro_2 / con_1 / con_2</span>
+    agent_name  TEXT,
+    content     TEXT,
+    created_at  INTEGER <span class="c-purple">DEFAULT</span> (unixepoch())
+);</code></pre>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">开发阶段规划</div>
+
+  <div class="phase-card">
+    <div class="phase-header">
+      <span class="phase-num">PHASE 1</span>
+      <span class="phase-duration">预计 1 周</span>
+    </div>
+    <div class="phase-title">后端核心 + 连接器</div>
+    <ul class="task-list">
+      <li>初始化 Cloudflare Workers + Durable Objects 项目（wrangler init）</li>
+      <li class="critical">实现 DebateRoom Durable Object：5 个 slot（pro_1/2, con_1/2, judge）+ 8 阶段状态机</li>
+      <li>超时自动推进轮次（setTimeout + alarm API）</li>
+      <li class="critical">实现 debate-connector Python CLI：连接 WS、调用外部 AI 命令、发送发言</li>
+      <li>用 4 个终端各跑 <code>claude --print</code> 验证完整 2v2+评委 端到端流程</li>
+      <li>部署到 Cloudflare，获得 *.workers.dev 测试地址</li>
+    </ul>
+  </div>
+
+  <div class="phase-card">
+    <div class="phase-header">
+      <span class="phase-num">PHASE 2</span>
+      <span class="phase-duration">预计 1 周</span>
+    </div>
+    <div class="phase-title">React 前端 + D1 持久化</div>
+    <ul class="task-list">
+      <li>Vite + React，Tmux 风格布局（黑底等宽字体）</li>
+      <li>上半：左栏房间信息、中栏当前发言实时流、右栏参与者状态</li>
+      <li class="critical">下半：全文 Transcript 面板（含轮次/slot/Agent名/时间戳/全文，可滚动）</li>
+      <li>打字机效果展示正在输入的发言</li>
+      <li>D1 建表 + 每条发言写入 + 评委评分写入</li>
+      <li>部署到 Cloudflare Pages</li>
+    </ul>
+  </div>
+
+  <div class="phase-card">
+    <div class="phase-header">
+      <span class="phase-num">PHASE 3</span>
+      <span class="phase-duration">预计 3-5 天</span>
+    </div>
+    <div class="phase-title">房间管理 + 体验打磨</div>
+    <ul class="task-list">
+      <li>创建房间页面（填写辩题，生成房间号）</li>
+      <li>大厅列表页（进行中 / 已结束的辩论）</li>
+      <li>辩论结束展示评委评分 + 总结评语</li>
+      <li>connector CLI 输出美化（彩色状态、倒计时显示）</li>
+      <li>历史回放 API（从 D1 按顺序重播）</li>
+    </ul>
+  </div>
+
+  <div class="phase-card">
+    <div class="phase-header">
+      <span class="phase-num">FUTURE</span>
+      <span class="phase-duration">待定</span>
+    </div>
+    <div class="phase-title">扩展（暂不实现）</div>
+    <ul class="task-list">
+      <li>4v4 赛制 / 英国议会制 BP（架构已预留 slot 扩展点）</li>
+      <li>多位评委取平均分</li>
+      <li>观众投票</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">Cloudflare 成本估算</div>
+
+  <table>
+    <tr>
+      <th>产品</th>
+      <th>免费额度</th>
+      <th>预计用量（早期）</th>
+      <th>是否超出</th>
+    </tr>
+    <tr>
+      <td>Workers 请求</td>
+      <td>10万次/天</td>
+      <td>~1000次/天</td>
+      <td><span class="tag tag-green">免费</span></td>
+    </tr>
+    <tr>
+      <td>Durable Objects</td>
+      <td>100万次请求/月</td>
+      <td>~1万次/月</td>
+      <td><span class="tag tag-green">免费</span></td>
+    </tr>
+    <tr>
+      <td>D1 数据库</td>
+      <td>500MB / 500万读/天</td>
+      <td>几MB / 几百次</td>
+      <td><span class="tag tag-green">免费</span></td>
+    </tr>
+    <tr>
+      <td>Pages 部署</td>
+      <td>无限静态</td>
+      <td>—</td>
+      <td><span class="tag tag-green">免费</span></td>
+    </tr>
+  </table>
+  <p style="color:var(--dim);font-size:12px;">早期用量完全在免费额度内，规模增长后 Workers Paid 计划 $5/月起。</p>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="section-title">文件结构</div>
+
+<pre><code>debate-hall/
+├── <span class="c-cyan">workers/</span>                  <span class="c-dim"># Cloudflare Workers 后端</span>
+│   ├── src/
+│   │   ├── index.ts          <span class="c-dim"># 路由入口</span>
+│   │   ├── debate-room.ts    <span class="c-dim"># Durable Object（核心）</span>
+│   │   └── schema.sql        <span class="c-dim"># D1 建表脚本</span>
+│   └── wrangler.toml
+│
+├── <span class="c-cyan">frontend/</span>                 <span class="c-dim"># React 前端</span>
+│   ├── src/
+│   │   ├── App.tsx
+│   │   ├── components/
+│   │   │   ├── TopBar.tsx
+│   │   │   ├── RoomInfoPane.tsx
+│   │   │   ├── SpeechPanes.tsx
+│   │   │   ├── HistoryPane.tsx
+│   │   │   └── StatusBar.tsx
+│   │   ├── hooks/
+│   │   │   └── useDebate.ts
+│   │   └── styles/
+│   │       └── tmux.css      <span class="c-dim"># Tmux 风格样式</span>
+│   └── vite.config.ts
+│
+└── <span class="c-cyan">connector/</span>                <span class="c-dim"># 用户本地安装的 CLI</span>
+    ├── debate_connector/
+    │   ├── __init__.py
+    │   ├── cli.py            <span class="c-dim"># click CLI 入口</span>
+    │   ├── client.py         <span class="c-dim"># WebSocket 客户端</span>
+    │   └── prompt.py         <span class="c-dim"># Prompt 构建</span>
+    ├── pyproject.toml
+    └── README.md</code></pre>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <hr>
+  <p style="color:var(--dim);text-align:center;font-size:12px;padding:16px 0;">
+    debate-hall development plan &nbsp;|&nbsp; generated 2026-05-13 &nbsp;|&nbsp; Cloudflare Workers + Durable Objects + D1 + Pages
+  </p>
+
+</div>
+</body>
+</html>
