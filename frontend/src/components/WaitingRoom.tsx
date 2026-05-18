@@ -46,10 +46,11 @@ function CmdLine({ cmd, kind, copyKey, copied, onCopy }: {
   )
 }
 
-export default function WaitingRoom({ slots, roomId, countdown }: {
+export default function WaitingRoom({ slots, roomId, countdown, isCreator }: {
   slots: Record<string, SlotInfo>
   roomId: string
   countdown?: number | null
+  isCreator?: boolean
 }) {
   const { T } = useLang()
   const [copied, setCopied] = useState<string | null>(null)
@@ -99,37 +100,39 @@ export default function WaitingRoom({ slots, roomId, countdown }: {
         : <div className="waiting-msg">{T.waiting.waitMsg}</div>
       }
 
-      <div style={{ marginTop: 24 }}>
-        <div className="text-dim" style={{ fontSize: 11, marginBottom: 8 }}>{T.waiting.cmdHint}</div>
-        {SLOT_LIST.filter(({ slot }) => !slots[slot]?.connected).map(({ slot, label }) => (
-          <div key={slot} style={{ marginBottom: 12 }}>
-            <div className="cmd-comment"># {label} · Claude</div>
-            <CmdLine
-              cmd={buildClaudeCmd(roomId, slot)}
-              kind="claude"
-              copyKey={`${slot}-claude`}
-              copied={copied}
-              onCopy={copy}
-            />
-            <div className="cmd-comment"># {label} · Codex</div>
-            <CmdLine
-              cmd={buildCodexCmd(roomId, slot)}
-              kind="codex"
-              copyKey={`${slot}-codex`}
-              copied={copied}
-              onCopy={copy}
-            />
-            <div className="cmd-comment"># {label} · OpenAI SDK</div>
-            <CmdLine
-              cmd={buildOpenAICmd(roomId, slot)}
-              kind="openai"
-              copyKey={`${slot}-openai`}
-              copied={copied}
-              onCopy={copy}
-            />
-          </div>
-        ))}
-      </div>
+      {isCreator && (
+        <div style={{ marginTop: 24 }}>
+          <div className="text-dim" style={{ fontSize: 11, marginBottom: 8 }}>{T.waiting.cmdHint}</div>
+          {SLOT_LIST.filter(({ slot }) => !slots[slot]?.connected).map(({ slot, label }) => (
+            <div key={slot} style={{ marginBottom: 12 }}>
+              <div className="cmd-comment"># {label} · Claude</div>
+              <CmdLine
+                cmd={buildClaudeCmd(roomId, slot)}
+                kind="claude"
+                copyKey={`${slot}-claude`}
+                copied={copied}
+                onCopy={copy}
+              />
+              <div className="cmd-comment"># {label} · Codex</div>
+              <CmdLine
+                cmd={buildCodexCmd(roomId, slot)}
+                kind="codex"
+                copyKey={`${slot}-codex`}
+                copied={copied}
+                onCopy={copy}
+              />
+              <div className="cmd-comment"># {label} · OpenAI SDK</div>
+              <CmdLine
+                cmd={buildOpenAICmd(roomId, slot)}
+                kind="openai"
+                copyKey={`${slot}-openai`}
+                copied={copied}
+                onCopy={copy}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -38,6 +38,7 @@ export default function Room() {
   const transcriptRef = useRef<HTMLDivElement>(null)
   const { T } = useLang()
   const SLOT_LABELS = T.slotShort as Record<string, string>
+  const isCreator = !!id && !!localStorage.getItem(`creator_token_${id}`)
 
   useEffect(() => {
     if (transcriptRef.current) {
@@ -52,7 +53,7 @@ export default function Room() {
   if (state.status === 'waiting' || state.status === 'countdown') {
     return (
       <div className="room">
-        <WaitingRoom slots={state.slots} roomId={id!} countdown={state.countdown} />
+        <WaitingRoom slots={state.slots} roomId={id!} countdown={state.countdown} isCreator={isCreator} />
       </div>
     )
   }

@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS debates (
-  id          TEXT PRIMARY KEY,
-  topic       TEXT NOT NULL,
-  status      TEXT NOT NULL DEFAULT 'waiting',
-  pro1_name   TEXT,
+  id            TEXT PRIMARY KEY,
+  topic         TEXT NOT NULL,
+  status        TEXT NOT NULL DEFAULT 'waiting',
+  creator_token TEXT,
+  pro1_name     TEXT,
   pro2_name   TEXT,
   con1_name   TEXT,
   con2_name   TEXT,

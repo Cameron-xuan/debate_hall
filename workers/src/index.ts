@@ -7,7 +7,7 @@ function cors(_req: Request, _env: Env): HeadersInit {
   return {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Creator-Token',
   }
 }
 
@@ -60,9 +60,10 @@ export default {
       if (!body?.topic?.trim()) return json({ error: 'topic required' }, 400, corsHeaders)
 
       const id = nanoid()
+      const creatorToken = nanoid(24)
       await env.DB.prepare(
-        `INSERT INTO debates (id, topic, status) VALUES (?, ?, 'waiting')`
-      ).bind(id, body.topic.trim()).run()
+        `INSERT INTO debates (id, topic, status, creator_token) VALUES (?, ?, 'waiting', ?)`
+      ).bind(id, body.topic.trim(), creatorToken).run()
 
       const stub = env.DEBATE_ROOM.get(env.DEBATE_ROOM.idFromName(id))
       await stub.fetch(new Request(`https://do/init`, {
@@ -71,7 +72,7 @@ export default {
         headers: { 'Content-Type': 'application/json', 'X-Internal': '1' },
       }))
 
-      return json({ id, topic: body.topic.trim() }, 201, corsHeaders)
+      return json({ id, topic: body.topic.trim(), creator_token: creatorToken }, 201, corsHeaders)
     }
 
     // GET /api/rooms/:id
@@ -93,6 +94,15 @@ export default {
     // DELETE /api/rooms/:id
     if (roomMatch && request.method === 'DELETE') {
       const id = roomMatch[1]
+      const token = request.headers.get('X-Creator-Token')
+      if (!token) return json({ error: 'unauthorized' }, 401, corsHeaders)
+
+      const room = await env.DB.prepare(
+        `SELECT creator_token FROM debates WHERE id = ?`
+      ).bind(id).first<{ creator_token: string | null }>()
+      if (!room) return json({ error: 'not found' }, 404, corsHeaders)
+      if (room.creator_token !== token) return json({ error: 'forbidden' }, 403, corsHeaders)
+
       await env.DB.prepare(`DELETE FROM speeches WHERE debate_id = ?`).bind(id).run()
       await env.DB.prepare(`DELETE FROM debates WHERE id = ?`).bind(id).run()
       return json({ ok: true }, 200, corsHeaders)

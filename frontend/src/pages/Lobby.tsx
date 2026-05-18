@@ -22,9 +22,18 @@ export default function Lobby() {
   const navigate = useNavigate()
   const { T } = useLang()
 
+  function isCreator(id: string): boolean {
+    return !!localStorage.getItem(`creator_token_${id}`)
+  }
+
   async function deleteRoom(e: React.MouseEvent, id: string) {
     e.stopPropagation()
-    await fetch(apiUrl(`/api/rooms/${id}`), { method: 'DELETE' })
+    const token = localStorage.getItem(`creator_token_${id}`)
+    if (!token) return
+    await fetch(apiUrl(`/api/rooms/${id}`), {
+      method: 'DELETE',
+      headers: { 'X-Creator-Token': token },
+    })
     setRooms(prev => prev.filter(r => r.id !== id))
   }
 
@@ -80,11 +89,13 @@ export default function Lobby() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div className="room-topic">{room.topic}</div>
-              <span
-                style={{ color: 'var(--dim)', fontSize: 11, cursor: 'pointer', padding: '0 4px' }}
-                onClick={e => deleteRoom(e, room.id)}
-                title="删除"
-              >✕</span>
+              {isCreator(room.id) && (
+                <span
+                  style={{ color: 'var(--dim)', fontSize: 11, cursor: 'pointer', padding: '0 4px' }}
+                  onClick={e => deleteRoom(e, room.id)}
+                  title="删除"
+                >✕</span>
+              )}
             </div>
             <div className="room-meta">
               <span className={room.status === 'active' ? 'text-green' : room.status === 'ended' ? 'text-dim' : 'text-yellow'}>

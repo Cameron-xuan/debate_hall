@@ -67,6 +67,9 @@ export default function Create() {
       }
       const data = await res.json()
       setRoomId(data.id)
+      if (data.creator_token) {
+        localStorage.setItem(`creator_token_${data.id}`, data.creator_token)
+      }
     } catch (e: any) {
       setError(e.message ?? 'Failed')
     } finally {
