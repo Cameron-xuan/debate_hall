@@ -25,8 +25,18 @@ function nanoid(len = 6): string {
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url)
     const corsHeaders = cors(request, env)
+    try {
+      return await handleRequest(request, env, corsHeaders)
+    } catch (e) {
+      console.error(e)
+      return json({ error: 'internal server error' }, 500, corsHeaders)
+    }
+  },
+}
+
+async function handleRequest(request: Request, env: Env, corsHeaders: HeadersInit): Promise<Response> {
+    const url = new URL(request.url)
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders })
@@ -62,13 +72,13 @@ export default {
       const id = nanoid()
       const creatorToken = nanoid(24)
       await env.DB.prepare(
-        `INSERT INTO debates (id, topic, status, creator_token) VALUES (?, ?, 'waiting', ?)`
-      ).bind(id, body.topic.trim(), creatorToken).run()
+        `INSERT INTO debates (id, topic, status) VALUES (?, ?, 'waiting')`
+      ).bind(id, body.topic.trim()).run()
 
       const stub = env.DEBATE_ROOM.get(env.DEBATE_ROOM.idFromName(id))
       await stub.fetch(new Request(`https://do/init`, {
         method: 'POST',
-        body: JSON.stringify({ id, topic: body.topic.trim() }),
+        body: JSON.stringify({ id, topic: body.topic.trim(), creatorToken }),
         headers: { 'Content-Type': 'application/json', 'X-Internal': '1' },
       }))
 
@@ -97,11 +107,14 @@ export default {
       const token = request.headers.get('X-Creator-Token')
       if (!token) return json({ error: 'unauthorized' }, 401, corsHeaders)
 
-      const room = await env.DB.prepare(
-        `SELECT creator_token FROM debates WHERE id = ?`
-      ).bind(id).first<{ creator_token: string | null }>()
-      if (!room) return json({ error: 'not found' }, 404, corsHeaders)
-      if (room.creator_token !== token) return json({ error: 'forbidden' }, 403, corsHeaders)
+      const stub = env.DEBATE_ROOM.get(env.DEBATE_ROOM.idFromName(id))
+      const verifyRes = await stub.fetch(new Request(`https://do/${id}/verify-token`, {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+        headers: { 'Content-Type': 'application/json', 'X-Internal': '1' },
+      }))
+      const { valid } = await verifyRes.json<{ valid: boolean }>()
+      if (!valid) return json({ error: 'forbidden' }, 403, corsHeaders)
 
       await env.DB.prepare(`DELETE FROM speeches WHERE debate_id = ?`).bind(id).run()
       await env.DB.prepare(`DELETE FROM debates WHERE id = ?`).bind(id).run()
@@ -109,5 +122,4 @@ export default {
     }
 
     return new Response('Not found', { status: 404 })
-  },
 }

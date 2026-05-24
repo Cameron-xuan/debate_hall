@@ -71,6 +71,7 @@ export interface DebateState {
   winner?: string
   judgeScore?: { pro: number; con: number; comment: string }
   createdAt: number
+  creatorToken?: string
 }
 
 // WebSocket message types (client → server)

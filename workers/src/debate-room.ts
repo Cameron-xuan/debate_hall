@@ -34,9 +34,15 @@ export class DebateRoom {
     }
 
     if (request.method === 'POST' && request.headers.get('X-Internal') === '1') {
-      const body = await request.json<{ id: string; topic: string }>()
-      await this.initRoom(body.id, body.topic)
+      const body = await request.json<{ id: string; topic: string; creatorToken?: string }>()
+      await this.initRoom(body.id, body.topic, body.creatorToken)
       return Response.json({ ok: true })
+    }
+
+    if (url.pathname.endsWith('/verify-token') && request.method === 'POST' && request.headers.get('X-Internal') === '1') {
+      const { token } = await request.json<{ token: string }>()
+      const valid = !!this.debate?.creatorToken && this.debate.creatorToken === token
+      return Response.json({ valid })
     }
 
     return new Response('Not found', { status: 404 })
@@ -484,7 +490,7 @@ export class DebateRoom {
   }
 
   // Called by index.ts to initialize a new room
-  async initRoom(id: string, topic: string): Promise<void> {
+  async initRoom(id: string, topic: string, creatorToken?: string): Promise<void> {
     this.debate = {
       id,
       topic,
@@ -499,6 +505,7 @@ export class DebateRoom {
         judge: { name: '', connected: false },
       },
       createdAt: Date.now(),
+      creatorToken,
     }
     await this.saveDebate()
   }
